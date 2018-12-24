@@ -1,0 +1,77 @@
+<html>
+<head>
+    <title>PunyMail</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/aes.js"></script>
+</head>
+<body>
+  <div style="padding-left: 20px; padding-top: 10px;">
+    <h4>Decrypt secret messages for Puny!</h4>
+    <nav>
+      <div class="nav nav-tabs" id="nav-tab" role="tablist">
+        <a class="nav-item nav-link active" id="nav-msg-tab" data-toggle="tab" href="#nav-msg" role="tab" aria-controls="nav-msg" aria-selected="true">Message</a>
+        <a class="nav-item nav-link" id="nav-img-tab" data-toggle="tab" href="#nav-img" role="tab" aria-controls="nav-img" aria-selected="false">Image</a>
+      </div>
+    </nav>
+    <div class="tab-content" id="nav-tabContent" style="padding-top: 10px;">
+      <div class="tab-pane fade show active" id="nav-msg" role="tabpanel" aria-labelledby="nav-msg-tab">
+        <textarea rows="10" cols="50" placeholder="Encrypted message here..." id="file"></textarea>
+      </div>
+      <div class="tab-pane fade" id="nav-img" role="tabpanel" aria-labelledby="nav-img-tab">
+        <input type="file" onchange="readFile()" style="float: left"><br>
+        <br>
+      </div>
+    </div>
+
+    <br>
+
+    <textarea rows="1" cols="50" placeholder="Passphrase here..." id="passphrase"></textarea>
+    <br>
+
+    <button onclick="punyDecrypt()">Decrypt!</button>
+    <br>
+    <div id="punyDecrypted"></div>
+  </div>
+    <script type="text/javascript">
+        function punyDecrypt() {
+            var isImage = $("#nav-img-tab").hasClass('active');
+            if(isImage) {
+                var encrypted = reader.result;
+            }
+            else {
+                var encrypted = document.getElementById("file").value;
+            }
+            encrypted = encrypted.slice(0, 50) + encrypted.slice(57);
+            var passphrase = document.getElementById("passphrase").value;
+            
+            var decrypted = CryptoJS.AES.decrypt(encrypted, passphrase).toString(CryptoJS.enc.Utf8);
+            if(isImage) {
+                var img = document.createElement('img');
+                img.height=700;
+                img.src = decrypted;
+
+                document.getElementById("punyDecrypted").innerHTML = img.outerHTML;
+            }
+            else {
+                document.getElementById("punyDecrypted").innerHTML = decrypted;
+            }
+        }
+
+        function readFile(){
+            var preview = document.querySelector('img');
+            var file = document.querySelector('input[type=file]').files[0];
+            reader = new FileReader();
+
+            if (file) {
+                reader.readAsText(file);
+            } else {
+                preview.src = "";
+            }
+        }
+
+    </script>
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+</body>
+</html>

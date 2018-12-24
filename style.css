@@ -1,0 +1,11 @@
+#camera video {
+	margin:15px;
+	float:left; 
+	-webkit-transform: scaleX(-1);
+ 	transform: scaleX(-1);
+}
+
+#camera canvas {
+	margin:15px;
+	float:left;
+}
