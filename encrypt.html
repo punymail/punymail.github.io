@@ -12,7 +12,6 @@
             <div class="nav nav-tabs" id="nav-tab" role="tablist">
                 <a class="nav-item nav-link active" id="nav-msg-tab" data-toggle="tab" href="#nav-msg" role="tab" aria-controls="nav-msg" aria-selected="true">Message</a>
                 <a class="nav-item nav-link" id="nav-img-tab" data-toggle="tab" href="#nav-img" role="tab" aria-controls="nav-img" aria-selected="false">Image</a>
-                <a class="nav-item nav-link" id="nav-camera-tab" data-toggle="tab" href="#nav-camera" role="tab" aria-controls="nav-camera" aria-selected="false">Camera</a>
             </div>
         </nav>
         <div class="tab-content" id="nav-tabContent" style="padding-top: 10px;">
@@ -24,22 +23,6 @@
                 <br>
                 <br>
                 <img id="uploadPreview" height="200" alt="Image preview..." style="display: none;">
-                <br>
-            </div>
-            <div class="tab-pane fade" id="nav-camera" role="tabpanel" aria-labelledby="nav-camera-tab">
-                <button onclick="onTakePhoto()">Use Webcam</button>
-                <div id="camera" style="display: none; height: 560px">
-                    <video id="video" style="display: block;">Video stream not available.</video>
-                    <br>
-                </div>
-                <br>
-                <button id="startbutton">Click!</button>
-                <br>
-                <br>
-                <div class="output">
-                    <img id="webcamPhoto" alt="The screen capture will appear in this box.">
-                </div>
-                <canvas id="canvas" style="display: none;"></canvas>
                 <br>
             </div>
         </div>
@@ -100,85 +83,7 @@
             element.href = window.URL.createObjectURL(blob);
             element.download = filename;
             element.click();
-            // setTimeout(function() {
-            //     document.body.removeChild(element)
-            // }, 5000);
         }
-
-    var onTakePhoto;
-
-    (function() {
-        var width = 720;    // We will scale the photo width to this
-        var height = 0;     // This will be computed based on the input stream
-
-        var streaming = false;
-
-        var video = null;
-        var canvas = null;
-        var photo = null;
-        var startbutton = null;
-
-        function startup() {
-            $('#camera')[0].style.display = "block";
-            video = document.getElementById('video');
-            canvas = document.getElementById('canvas');
-            photo = document.getElementById('webcamPhoto');
-            startbutton = document.getElementById('startbutton');
-            navigator.mediaDevices.getUserMedia({ video: true, audio: false })
-                .then(function(stream) {
-                    video.srcObject = stream;
-                    video.play();
-                })
-                .catch(function(err) {
-                    console.log("An error occurred! " + err);
-                });
-
-            video.addEventListener('canplay', function(ev){
-                  if (!streaming) {
-                    height = video.videoHeight / (video.videoWidth/width);
-                  
-                    video.setAttribute('width', width);
-                    video.setAttribute('height', height);
-                    canvas.setAttribute('width', width);
-                    canvas.setAttribute('height', height);
-                    streaming = true;
-                  }
-                }, false);
-
-            startbutton.addEventListener('click', function(ev){
-                takepicture();
-                ev.preventDefault();
-            }, false);
-            clearphoto();
-        }
-
-        function clearphoto() {
-            var context = canvas.getContext('2d');
-            context.fillStyle = "#AAA";
-            context.fillRect(0, 0, canvas.width, canvas.height);
-
-            var data = canvas.toDataURL('image/png');
-            photo.setAttribute('src', data);
-        }
-
-        function takepicture() {
-            var context = canvas.getContext('2d');
-            if (width && height) {
-                canvas.width = width;
-                canvas.height = height;
-                context.translate(width, 0);
-                context.scale(-1, 1);
-                context.drawImage(video, 0, 0, width, height);              
-                var data = canvas.toDataURL('image/png');
-                photo.setAttribute('src', data);
-            }
-            else {
-                clearphoto();
-            }
-        }
-
-        onTakePhoto = startup;
-    })();
 
         </script>
         <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
