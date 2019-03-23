@@ -22,7 +22,10 @@
                 <input type="file" onchange="previewFile()">
                 <br>
                 <br>
-                <img id="uploadPreview" height="200" alt="Image preview..." style="display: none;">
+                <img class="uploadPreview" height="200" alt="Image preview..." style="display: none;">
+                <video class="uploadPreview" height="200" style="display: none;" controls>
+                    <!-- <source src="" type="video/mp4"> -->
+                </video>
                 <br>
             </div>
         </div>
@@ -36,22 +39,42 @@
         <div id="punyEncrypted"></div>
     </div>
         <script type="text/javascript">
+            var isVideo = false;
+
+            function chunkSubstr(str, size) {
+                const numChunks = Math.ceil(str.length / size)
+                const chunks = new Array(numChunks)
+
+                for (let i = 0, o = 0; i < numChunks; ++i, o += size) {
+                    chunks[i] = str.substr(o, size)
+                }
+
+                return chunks
+            }
+
             function punyEncrypt() {
                 var passphrase = document.getElementById("passphrase").value;
                 var isImage = $("#nav-img-tab").hasClass('active')
-                var isCamera = $("#nav-camera-tab").hasClass('active')
-                if(isImage) {
-                    var message = $('img#uploadPreview')[0].src;
+                if(isVideo) {
+                    var message = $('video.uploadPreview source')[0].src;
                 }
-                else if (isCamera) {
-                    var message = $('img#webcamPhoto')[0].src;
+                else if(isImage) {
+                    var message = $('img.uploadPreview')[0].src;
                 }
                 else {
                     var message = document.getElementById("file").value;
                 }
-                var encrypted = CryptoJS.AES.encrypt(message, passphrase).toString();
+                var maxChunkSize = 10000000 // 10 million bytes
+                var encryptedChunks = []
+                var rawChunks = chunkSubstr(message, maxChunkSize)
+                for(var idx in rawChunks)
+                    encryptedChunks.push(CryptoJS.AES.encrypt(rawChunks[idx], passphrase).toString());
+                if(isVideo)
+                    var encrypted = 'video,' + encryptedChunks.join(',')
+                else
+                    var encrypted = encryptedChunks.join(',')
                 encrypted = encrypted.slice(0, 50) + "PuNYMsG" + encrypted.slice(50);
-                if(isImage || isCamera) {
+                if(isImage) {
                     download('punimage', encrypted);
                 }
                 else {
@@ -60,13 +83,25 @@
             }
 
          function previewFile(){
-            var preview = $('img#uploadPreview')[0];
             var file = document.querySelector('input[type=file]').files[0];
             reader = new FileReader();
 
             reader.onloadend = function () {
-                preview.src = reader.result;
-                preview.style.display = "block";
+                isVideo = false;
+                var mimeType = reader.result.substr(0, reader.result.indexOf(';'));
+                if(mimeType.indexOf('img') == -1) {
+                    var video = $('video.uploadPreview')[0];
+                    var source = document.createElement('source');
+                    source.setAttribute('src', reader.result);
+                    video.appendChild(source);
+                    video.style.display = "block";
+                    isVideo = true;
+                }
+                else {
+                    var preview = $('img.uploadPreview')[0];
+                    preview.src = reader.result;
+                    preview.style.display = "block";
+                }
             }
 
             if (file) {

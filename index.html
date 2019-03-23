@@ -43,9 +43,25 @@
             }
             encrypted = encrypted.slice(0, 50) + encrypted.slice(57);
             var passphrase = document.getElementById("passphrase").value;
-            
-            var decrypted = CryptoJS.AES.decrypt(encrypted, passphrase).toString(CryptoJS.enc.Utf8);
-            if(isImage) {
+            var encryptedChunks = encrypted.split(',')
+            var isVideo = encryptedChunks[0] == 'video'
+            var decryptedChunks = []
+            for(var idx in encryptedChunks) {
+                if(isVideo && idx == 0)
+                    continue
+                decryptedChunks.push(CryptoJS.AES.decrypt(encryptedChunks[idx], passphrase).toString(CryptoJS.enc.Utf8))
+            }
+            var decrypted = decryptedChunks.join('')
+            if(isVideo) {
+                var video = document.createElement('video');
+                var source = document.createElement('source');
+                source.setAttribute('src', decrypted);
+                video.setAttribute('controls', true)
+                video.appendChild(source);
+                video.height=700;
+                document.getElementById("punyDecrypted").appendChild(video);
+            }
+            else if(isImage) {
                 var img = document.createElement('img');
                 img.height=700;
                 img.src = decrypted;
