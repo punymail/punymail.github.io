@@ -56,7 +56,7 @@
                 var passphrase = document.getElementById("passphrase").value;
                 var isImage = $("#nav-img-tab").hasClass('active')
                 if(isVideo) {
-                    var message = $('video.uploadPreview source')[0].src;
+                    var message = $('video.uploadPreview source')[0].rawData;
                 }
                 else if(isImage) {
                     var message = $('img.uploadPreview')[0].src;
@@ -84,18 +84,29 @@
 
          function previewFile(){
             var file = document.querySelector('input[type=file]').files[0];
+            var fileUrl = URL.createObjectURL(file);
             reader = new FileReader();
 
             reader.onloadend = function () {
                 isVideo = false;
                 var mimeType = reader.result.substr(0, reader.result.indexOf(';'));
+                console.log(reader.result.length)
                 if(mimeType.indexOf('img') == -1) {
                     var video = $('video.uploadPreview')[0];
                     var source = document.createElement('source');
-                    source.setAttribute('src', reader.result);
+                    source.setAttribute('src', fileUrl);
+                    source.setAttribute('rawData', reader.result)
                     video.appendChild(source);
                     video.style.display = "block";
                     isVideo = true;
+                    // setTimeout(function() {  
+                    //     video.pause();
+
+                    //     source.setAttribute('src', src); 
+
+                    //     video.load();
+                    //     video.play();
+                    // }, 3000);
                 }
                 else {
                     var preview = $('img.uploadPreview')[0];
