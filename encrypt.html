@@ -91,7 +91,7 @@
                 isVideo = false;
                 var mimeType = reader.result.substr(0, reader.result.indexOf(';'));
                 console.log(reader.result.length)
-                if(mimeType.indexOf('img') == -1) {
+                if(mimeType.indexOf('img') == -1 && mimeType.indexOf('image') == -1) {
                     var video = $('video.uploadPreview')[0];
                     var source = document.createElement('source');
                     source.setAttribute('src', fileUrl);
