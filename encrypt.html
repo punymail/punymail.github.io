@@ -56,7 +56,7 @@
                 var passphrase = document.getElementById("passphrase").value;
                 var isImage = $("#nav-img-tab").hasClass('active')
                 if(isVideo) {
-                    var message = $('video.uploadPreview source')[0].rawData;
+                    var message = $('video.uploadPreview source')[0].getAttribute('rawData');
                 }
                 else if(isImage) {
                     var message = $('img.uploadPreview')[0].src;
@@ -64,7 +64,8 @@
                 else {
                     var message = document.getElementById("file").value;
                 }
-                var maxChunkSize = 10000000 // 10 million bytes
+                console.log(message, isVideo)
+                var maxChunkSize = 10000000 // 10 million bytes``
                 var encryptedChunks = []
                 var rawChunks = chunkSubstr(message, maxChunkSize)
                 for(var idx in rawChunks)
